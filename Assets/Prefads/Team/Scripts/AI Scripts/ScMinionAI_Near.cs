@@ -22,6 +22,8 @@ public class ScMinionAI_Near : MonoBehaviour {
     protected Vector3 movement;  // Direction of the force that will be exerted on the gameobject
     protected float minionsMovUnits;  //  Amount of force that will be exerted on the gameobject
 
+    private GameObject Player;
+
 
     // Use this for initialization
     /// <summary>
@@ -37,6 +39,8 @@ public class ScMinionAI_Near : MonoBehaviour {
 
         movement = new Vector3(0.0f, 0.0f, 0.0f); // We initialize the date value
         minionsMovUnits = 1f; // We initialize the date value
+
+        Player = GameObject.Find("Player_Far");
     }  // FIn de - void Start()
 
     // Update is called once per frame
@@ -62,10 +66,43 @@ public class ScMinionAI_Near : MonoBehaviour {
     /// </summary>
     void FixedUpdate()
     {
-        custiodarProfit();
+
+        // Si la distancia al Player es menor que 5, los Minions van a perseguir al Player
+        if (Vector3.Distance(this.transform.position, Player.transform.position) < 0.5)
+        {
+            perseguirPlayer();
+        }
+
+        // En caso de que el Minion se encuentre más lejos, 
+        else
+        {
+            custodiarProfit();
+        }
+            
     }// Fin de - void FixedUpdate()
 
-    void custiodarProfit(){
+    void perseguirPlayer()
+    {
+        // Se puede dibujar una línea para comprobar
+        //Debug.DrawLine(this.transform.position, Player.transform.position);
+
+        // Hacemos que los Minions miren hacia el Player
+        var lookPos = Player.transform.position - this.transform.position;
+        //lookPos.y = 0;
+
+        // Otra forma de realizar el movimiento
+        //var rotation = Quaternion.LookRotation(lookPos);
+        //transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 2);
+        // Hacemos que, mirando hacia el Player, se mueva hacia delante a por él
+        //transform.Translate(Vector3.forward * 3 * Time.deltaTime);
+
+        // Guarda el vector hacia donde tiene que ir y lo multiplica hacia la velocidad que puede ir el Minion
+        movement = lookPos;
+        minionsMovUnits = minionsMovUnits * ScGameGlobalData.maxMinionsMovUnits;
+        GetComponent<ScMinionControl>().moveOn(movement, minionsMovUnits);
+    }
+
+    void custodiarProfit(){
 
         float distanceToClosestPickUp = Mathf.Infinity;
         GameObject closestPickup = null;
@@ -100,13 +137,14 @@ public class ScMinionAI_Near : MonoBehaviour {
 
         if (closestPickup == null){
             //Perseguir player
+            perseguirPlayer();
         }else{
             //Custiodar Profit
             var lookPos = closestPickup.transform.position - this.transform.position;
-            lookPos.y = 0;
+            //lookPos.y = 0;
 
             movement = lookPos;
-            minionsMovUnits = ScGameGlobalData.maxMinionsMovUnits;
+            minionsMovUnits = minionsMovUnits * ScGameGlobalData.maxMinionsMovUnits;
             GetComponent<ScMinionControl>().moveOn(movement, minionsMovUnits);
         }
     }// Fin   
