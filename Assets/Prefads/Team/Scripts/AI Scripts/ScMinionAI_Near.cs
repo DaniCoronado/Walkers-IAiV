@@ -62,28 +62,54 @@ public class ScMinionAI_Near : MonoBehaviour {
     /// </summary>
     void FixedUpdate()
     {
-        // Every "timeWhitoutChange_ms" milliseconds we modify the value of "movement" and "minionsMovUnits"
-        DateTime dateNow = DateTime.Now; 
-        TimeSpan timeWhitoutChange = dateNow - date_lastChamge;
+        custiodarProfit();
+    }// Fin de - void FixedUpdate()
 
-        double timeWhitoutChange_ms = timeWhitoutChange.TotalMilliseconds;
+    void custiodarProfit(){
 
-        if (timeWhitoutChange_ms > periodMilisec)
+        float distanceToClosestPickUp = Mathf.Infinity;
+        GameObject closestPickup = null;
+        GameObject[] alltargets = GameObject.FindGameObjectsWithTag("Profit");
+        GameObject[] allminions = GameObject.FindGameObjectsWithTag("Minion");
+        bool near = true;
+
+        //Calcula el Profit mas cercano y compruba si hay algun minion cerca de ese Profit
+        foreach (GameObject currentPickup in alltargets)
         {
-            // We calculate the direction and quantity of movement
-            // We obtain "movement" and "minionsMovUnits" randonly
-            float move_X = Random.Range(-1.0f, 1f);
-            float move_Z = Random.Range(-1f, 1f);
-            float minionsMovUnits = Random.Range(0.0f, 1f);
-
-            minionsMovUnits = minionsMovUnits * ScGameGlobalData.maxMinionsMovUnits;
-            movement = new Vector3(move_X, 0.0f, move_Z);
-
-            date_lastChamge = dateNow;  // We actualizate date_lastChamge
+            if (currentPickup.activeInHierarchy)
+            {
+                float distanceToPickup = (currentPickup.transform.position - this.transform.position).sqrMagnitude;
+                if (distanceToPickup < distanceToClosestPickUp)
+                {
+                    foreach (GameObject currentMinion in allminions){
+                        float distanceMinionPickup = (currentPickup.transform.position - currentMinion.transform.position).sqrMagnitude;
+                        if (distanceMinionPickup < distanceToPickup)
+                        {
+                            near = false;
+                            break;
+                        }
+                    }
+                    if(near){
+                        distanceToClosestPickUp = distanceToPickup;
+                        closestPickup = currentPickup;
+                    }
+                    near = true;
+                }
+            }
         }
 
-        // CALLING TO THIS FUNCTION YOU CAN MANAGE THE ELEMENT WITH THE ARTIFICIAL INTELLIGENCE THAT YOU MUST DEVELOP
-        GetComponent<ScMinionControl>().moveOn(movement, minionsMovUnits);
-    }  // Fin de - void FixedUpdate()
+        if (closestPickup == null){
+            //Perseguir player
+        }else{
+            //Custiodar Profit
+            var lookPos = closestPickup.transform.position - this.transform.position;
+            lookPos.y = 0;
+
+            movement = lookPos;
+            minionsMovUnits = ScGameGlobalData.maxMinionsMovUnits;
+            GetComponent<ScMinionControl>().moveOn(movement, minionsMovUnits);
+        }
+    }// Fin   
+    
 
 }  // Fin de - public class ScMinionAI_Near : MonoBehaviour {

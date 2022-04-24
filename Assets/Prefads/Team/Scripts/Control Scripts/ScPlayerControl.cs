@@ -99,7 +99,9 @@ public class ScPlayerControl : MonoBehaviour
                 else { Debug.Log(" Error 002 en ScPlayerControl"); }
             }
         }
-        else { Debug.Log(" Error 003 en ScPlayerControl"); }
+        else { 
+            //Debug.Log(" Error 003 en ScPlayerControl"); 
+            }
     }  // Fin de -  private void OnTriggerEnter(Collider other)
 
 }  // Fin de - public class ScPlayerControl : MonoBehaviour
