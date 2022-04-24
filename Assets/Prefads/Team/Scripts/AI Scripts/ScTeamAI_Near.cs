@@ -42,7 +42,7 @@ public class ScTeamAI_Near : MonoBehaviour {
     void Update () {
 
         // You can access to the information of all elementes in the game usinr sentences lake the following
-
+    /*
         foreach (gameElement elementNear in Game.GetComponent<ScGameGlobalData>().listTeam_Near)
         {
             Vector3 posicion = elementNear.giveToMePosition();
@@ -81,6 +81,7 @@ public class ScTeamAI_Near : MonoBehaviour {
                 " - element profit posicion z : " + posicion.z +
                 " - element profit posicion y : " + posicion.y);
         }
+        */
 
     }  // FIn de - void Update()
 
